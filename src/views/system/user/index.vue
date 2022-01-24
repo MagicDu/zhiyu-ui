@@ -199,8 +199,8 @@
         <pagination
           v-show="total>0"
           :total="total"
-          :page.sync="queryParams.pageNum"
-          :limit.sync="queryParams.pageSize"
+          :page.sync="queryParams.current"
+          :limit.sync="queryParams.size"
           @pagination="getList"
         />
       </el-col>
@@ -380,7 +380,7 @@ export default {
       // 部门名称
       deptName: undefined,
       // 默认密码
-      initPassword: undefined,
+      initPassword: 123456,
       // 日期范围
       dateRange: [],
       // 岗位选项
@@ -410,8 +410,8 @@ export default {
       },
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
+        current: 1,
+        size: 10,
         userName: undefined,
         phonenumber: undefined,
         status: undefined,
@@ -466,17 +466,17 @@ export default {
   created() {
     this.getList();
     this.getTreeselect();
-    this.getConfigKey("sys.user.initPassword").then(response => {
-      this.initPassword = response.msg;
-    });
+    // this.getConfigKey("sys.user.initPassword").then(response => {
+    //   this.initPassword = response.msg;
+    // });
   },
   methods: {
     /** 查询用户列表 */
     getList() {
       this.loading = true;
-      listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows;
-          this.total = response.total;
+      listUser(this.queryParams).then(response => {
+          this.userList = response.data.records;
+          this.total = response.data.total;
           this.loading = false;
         }
       );
@@ -566,8 +566,8 @@ export default {
       this.reset();
       this.getTreeselect();
       getUser().then(response => {
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
+        this.postOptions = response.data.posts;
+        this.roleOptions = response.data.roles;
         this.open = true;
         this.title = "添加用户";
         this.form.password = this.initPassword;
@@ -579,11 +579,11 @@ export default {
       this.getTreeselect();
       const userId = row.userId || this.ids;
       getUser(userId).then(response => {
-        this.form = response.data;
-        this.postOptions = response.posts;
-        this.roleOptions = response.roles;
-        this.form.postIds = response.postIds;
-        this.form.roleIds = response.roleIds;
+        this.form = response.data.data;
+        this.postOptions = response.data.posts;
+        this.roleOptions = response.data.roles;
+        this.form.postIds = response.data.postIds;
+        this.form.roleIds = response.data.roleIds;
         this.open = true;
         this.title = "修改用户";
         this.form.password = "";
