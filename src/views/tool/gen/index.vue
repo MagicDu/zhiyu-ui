@@ -87,7 +87,7 @@
       <el-table-column type="selection" align="center" width="55"></el-table-column>
       <el-table-column label="序号" type="index" width="50" align="center">
         <template slot-scope="scope">
-          <span>{{(queryParams.pageNum - 1) * queryParams.pageSize + scope.$index + 1}}</span>
+          <span>{{(queryParams.current - 1) * queryParams.size + scope.$index + 1}}</span>
         </template>
       </el-table-column>
       <el-table-column
@@ -217,8 +217,8 @@ export default {
       dateRange: "",
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
+        current: 1,
+        size: 10,
         tableName: undefined,
         tableComment: undefined
       },
@@ -246,16 +246,16 @@ export default {
     /** 查询表集合 */
     getList() {
       this.loading = true;
-      listTable(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.tableList = response.rows;
-          this.total = response.total;
+      listTable(this.queryParams).then(response => {
+          this.tableList = response.data.records;
+          this.total = response.data.total;
           this.loading = false;
         }
       );
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
+      this.queryParams.current = 1;
       this.getList();
     },
     /** 生成代码操作 */

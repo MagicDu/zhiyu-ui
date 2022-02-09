@@ -63,8 +63,8 @@ export default {
       dbTableList: [],
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
+        current: 1,
+        size: 10,
         tableName: undefined,
         tableComment: undefined
       }
@@ -86,15 +86,15 @@ export default {
     // 查询表数据
     getList() {
       listDbTable(this.queryParams).then(res => {
-        if (res.code === 200) {
-          this.dbTableList = res.rows;
-          this.total = res.total;
+        if (res.code === 0) {
+          this.dbTableList = res.data.records;
+          this.total = res.data.total;
         }
       });
     },
     /** 搜索按钮操作 */
     handleQuery() {
-      this.queryParams.pageNum = 1;
+      this.queryParams.current = 1;
       this.getList();
     },
     /** 重置按钮操作 */
@@ -110,8 +110,8 @@ export default {
         return;
       }
       importTable({ tables: tableNames }).then(res => {
-        this.$modal.msgSuccess(res.msg);
-        if (res.code === 200) {
+        this.$modal.msgSuccess(res.message);
+        if (res.code === 0) {
           this.visible = false;
           this.$emit("ok");
         }
