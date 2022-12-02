@@ -145,8 +145,8 @@
     <pagination
       v-show="total>0"
       :total="total"
-      :page.sync="queryParams.pageNum"
-      :limit.sync="queryParams.pageSize"
+      :page.sync="queryParams.current"
+      :limit.sync="queryParams.size"
       @pagination="getList"
     />
 
@@ -213,8 +213,8 @@ export default {
       dateRange: [],
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
+        current: 0,
+        size: 10,
         configName: undefined,
         configKey: undefined,
         configType: undefined
@@ -242,9 +242,9 @@ export default {
     /** 查询参数列表 */
     getList() {
       this.loading = true;
-      listConfig(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.configList = response.rows;
-          this.total = response.total;
+      listConfig(this.queryParams).then(response => {
+          this.configList = response.data.records;
+          this.total = response.data.total;
           this.loading = false;
         }
       );
@@ -321,7 +321,7 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const configIds = row.configId || this.ids;
+      const configIds = [row.configId] || this.ids;
       this.$modal.confirm('是否确认删除参数编号为"' + configIds + '"的数据项？').then(function() {
           return delConfig(configIds);
         }).then(() => {
