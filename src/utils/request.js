@@ -6,7 +6,7 @@ import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
-
+import {rsaDecode,aesDecode} from '@/utils/magicencrypt'
 let downloadLoadingInstance;
 // 是否显示重新登录
 let isReloginShow;
@@ -108,7 +108,13 @@ service.interceptors.response.use(res => {
       })
       return Promise.reject('error')
     } else {
-      return res.data
+      let data=res.data;
+      if(data.key!=null){
+         let key= rsaDecode(data.key)
+        data.data=JSON.parse(aesDecode(data.data,key));
+      }
+      console.log(data,"请求数据")
+      return data
     }
   },
   error => {
