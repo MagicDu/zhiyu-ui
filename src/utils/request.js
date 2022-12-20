@@ -109,8 +109,9 @@ service.interceptors.response.use(res => {
       return Promise.reject('error')
     } else {
       let data=res.data;
-      if(data.key!=null){
-         let key= rsaDecode(data.key)
+      let key=res.headers['x-magic-header']
+      if(key&&key!=null){
+        key= rsaDecode(key)
         data.data=JSON.parse(aesDecode(data.data,key));
       }
       console.log(data,"请求数据")
