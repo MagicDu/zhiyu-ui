@@ -6,7 +6,8 @@ import errorCode from '@/utils/errorCode'
 import { tansParams, blobValidate } from "@/utils/ruoyi";
 import cache from '@/plugins/cache'
 import { saveAs } from 'file-saver'
-import {rsaDecode,aesDecode} from '@/utils/magicencrypt'
+import {rsaDecode,aesDecode,aesEncode,rsaEncode,generateKey} from '@/utils/magicencrypt'
+import urls from '@/utils/encryptapis'
 let downloadLoadingInstance;
 // 是否显示重新登录
 let isReloginShow;
@@ -41,6 +42,15 @@ service.interceptors.request.use(config => {
       url: config.url,
       data: typeof config.data === 'object' ? JSON.stringify(config.data) : config.data,
       time: new Date().getTime()
+    }
+    if(urls.urls.includes(config.url)){
+      let key=generateKey()
+      let data=JSON.stringify(config.data)
+      data=aesEncode(data,key)
+      config.data={}
+      config.data.data=data
+      let encodeAesKey = rsaEncode(key);
+      config.headers['x-magic-front-header'] = encodeAesKey
     }
     const sessionObj = cache.session.getJSON('sessionObj')
     if (sessionObj === undefined || sessionObj === null || sessionObj === '') {
