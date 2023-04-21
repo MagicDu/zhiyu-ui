@@ -186,8 +186,8 @@ export default {
       open: false,
       // 查询参数
       queryParams: {
-        pageNum: 1,
-        pageSize: 10,
+        current: 1,
+        size: 10,
         postCode: undefined,
         postName: undefined,
         status: undefined
@@ -216,8 +216,8 @@ export default {
     getList() {
       this.loading = true;
       listPost(this.queryParams).then(response => {
-        this.postList = response.rows;
-        this.total = response.total;
+        this.postList = response.data.records;
+        this.total = response.data.total;
         this.loading = false;
       });
     },
@@ -292,7 +292,7 @@ export default {
     },
     /** 删除按钮操作 */
     handleDelete(row) {
-      const postIds = row.postId || this.ids;
+      const postIds = [row.postId] || this.ids;
       this.$modal.confirm('是否确认删除岗位编号为"' + postIds + '"的数据项？').then(function() {
         return delPost(postIds);
       }).then(() => {
