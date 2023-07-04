@@ -40,6 +40,14 @@ module.exports = {
         pathRewrite: {
           ['^' + process.env.VUE_APP_BASE_API]: ''
         }
+      },
+      '/socket': {
+        target: `ws://localhost:9527`,
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/socket': '' // 需要rewrite的,
+        }
       }
     },
     disableHostCheck: true
