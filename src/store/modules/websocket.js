@@ -1,6 +1,7 @@
 import Stomp from 'stompjs';
 import SockJS from "sockjs-client";
 import { getToken } from '@/utils/auth'
+import Vue from 'vue'
 
 const magicsocket = {
     state: {
@@ -9,6 +10,7 @@ const magicsocket = {
     mutations: {
         setStompClient: (state, stompClient) => {
             state.stompClient = stompClient
+            Vue.prototype.$stompClient = stompClient;// 测试用
         },
     },
     actions: {
